@@ -1,7 +1,17 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">HOLA MUNDO</h1>
-    </main>
-  );
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('doctors')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  redirect(profile?.role === 'admin' ? '/admin' : '/dashboard')
 }

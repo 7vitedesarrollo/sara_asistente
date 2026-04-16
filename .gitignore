@@ -24,6 +24,12 @@
 .DS_Store
 *.pem
 
+# Claude Code local config (skills binaries, etc.)
+.claude/
+
+# MCP config (contains tokens)
+.mcp.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -39,3 +45,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.gstack/
