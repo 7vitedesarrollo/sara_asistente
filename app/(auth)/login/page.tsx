@@ -33,7 +33,6 @@ export default function LoginPage() {
       } else {
         setError('')
         setMode('login')
-        // Supabase envía email de confirmación
         alert('Revisa tu correo para confirmar tu cuenta.')
       }
     }
@@ -42,16 +41,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-cream px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">sara</h1>
-          <p className="text-gray-500 text-sm mt-1">Asistente clínica para médicos</p>
+        <div className="text-center mb-10">
+          <div className="inline-grid place-items-center w-12 h-12 bg-sage rounded-lg mb-4">
+            <span className="font-display italic text-white text-2xl leading-none">S</span>
+          </div>
+          <h1 className="font-display text-5xl text-graphite leading-none">Sara</h1>
+          <p className="text-graphite-muted text-sm mt-3">Asistente para nutricionistas clínicos</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-cream-raised border border-border rounded-xl p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-graphite-muted mb-2">
               Correo electrónico
             </label>
             <input
@@ -60,12 +62,12 @@ export default function LoginPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="tu@correo.com"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2.5 bg-cream-raised border border-border-strong rounded-md text-sm text-graphite placeholder:text-graphite-subtle focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-graphite-muted mb-2">
               Contraseña
             </label>
             <input
@@ -74,33 +76,37 @@ export default function LoginPage() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2.5 bg-cream-raised border border-border-strong rounded-md text-sm text-graphite placeholder:text-graphite-subtle focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg transition-all"
             />
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-terracotta text-sm">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-full bg-sage text-white py-2.5 rounded-md text-sm font-medium hover:bg-[#3D6A4A] disabled:opacity-50 transition-colors"
           >
-            {loading ? 'Cargando...' : mode === 'login' ? 'Ingresar' : 'Registrarse'}
+            {loading ? 'Cargando…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta'}
           </button>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-graphite-muted pt-1">
             {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
             <button
               type="button"
               onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}
-              className="text-blue-600 hover:underline"
+              className="text-sage font-medium hover:underline"
             >
               {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
             </button>
           </p>
         </form>
+
+        <p className="text-center text-[11px] font-mono uppercase tracking-widest text-graphite-subtle mt-8">
+          Para nutricionistas que respetan su criterio.
+        </p>
       </div>
     </div>
   )
