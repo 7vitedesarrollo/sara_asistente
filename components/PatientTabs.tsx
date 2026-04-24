@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const tabs = [
-  { label: 'Atenciones', path: 'atenciones' },
+  { label: 'Consultas', path: 'atenciones' },
   { label: 'Ficha', path: 'ficha' },
-  { label: 'Recetas', path: 'prescriptions' },
+  { label: 'Planes alimentarios', path: 'prescriptions' },
   { label: 'Exámenes', path: 'ordenes' },
   { label: 'Certificados', path: 'certificados' },
 ]

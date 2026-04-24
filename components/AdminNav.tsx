@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/admin', label: 'Resumen', icon: '🏠', exact: true },
-  { href: '/admin/doctors', label: 'Médicos', icon: '👨‍⚕️' },
+  { href: '/admin/nutricionistas', label: 'Nutricionistas', icon: '👨‍⚕️' },
   { href: '/admin/users', label: 'Usuarios', icon: '👥' },
 ]
 

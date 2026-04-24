@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
     if (user) {
       // Redirigir según rol
       const { data: profile } = await supabase
-        .from('doctors')
+        .from('nutritionists')
         .select('role')
         .eq('id', user.id)
         .single()
@@ -54,7 +54,7 @@ export async function updateSession(request: NextRequest) {
   // Doctor intentando acceder a rutas de admin → redirigir
   if (pathname.startsWith('/admin')) {
     const { data: profile } = await supabase
-      .from('doctors')
+      .from('nutritionists')
       .select('role')
       .eq('id', user.id)
       .single()
@@ -63,7 +63,7 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Admin intentando acceder a rutas de doctor → permitir (admin puede ver todo)
+  // Admin intentando acceder a rutas de nutricionista → permitir (admin puede ver todo)
 
   return supabaseResponse
 }

@@ -8,8 +8,8 @@ type User = {
   id: string
   name: string
   email: string
-  role: 'admin' | 'doctor'
-  specialty: string | null
+  role: 'admin' | 'nutritionist'
+  specialization: string | null
   created_at: string
 }
 
@@ -19,11 +19,11 @@ export default function UsersClient({ users: initial }: { users: User[] }) {
   const [loading, setLoading] = useState<string | null>(null)
 
   async function toggleRole(user: User) {
-    const newRole = user.role === 'admin' ? 'doctor' : 'admin'
+    const newRole = user.role === 'admin' ? 'nutritionist' : 'admin'
     setLoading(user.id)
 
     const { error } = await supabase
-      .from('doctors')
+      .from('nutritionists')
       .update({ role: newRole })
       .eq('id', user.id)
 

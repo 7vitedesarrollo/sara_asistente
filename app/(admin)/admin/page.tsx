@@ -9,12 +9,12 @@ export default async function AdminDashboard() {
     { count: totalVisits },
     { data: recentDoctors },
   ] = await Promise.all([
-    supabase.from('doctors').select('*', { count: 'exact', head: true }).eq('role', 'doctor'),
+    supabase.from('nutritionists').select('*', { count: 'exact', head: true }).eq("role", "nutritionist"),
     supabase.from('patients').select('*', { count: 'exact', head: true }),
-    supabase.from('visits').select('*', { count: 'exact', head: true }),
-    supabase.from('doctors')
-      .select('id, name, email, specialty, created_at')
-      .eq('role', 'doctor')
+    supabase.from('consultations').select('*', { count: 'exact', head: true }),
+    supabase.from('nutritionists')
+      .select('id, name, email, specialization, created_at')
+      .eq("role", "nutritionist")
       .order('created_at', { ascending: false })
       .limit(5),
   ])
@@ -22,7 +22,7 @@ export default async function AdminDashboard() {
   const stats = [
     { label: 'Médicos registrados', value: totalDoctors ?? 0, icon: '👨‍⚕️' },
     { label: 'Pacientes totales', value: totalPatients ?? 0, icon: '👤' },
-    { label: 'Atenciones totales', value: totalVisits ?? 0, icon: '📋' },
+    { label: 'Consultas totales', value: totalVisits ?? 0, icon: '📋' },
   ]
 
   return (
@@ -43,7 +43,7 @@ export default async function AdminDashboard() {
       <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="font-semibold text-gray-800 text-sm">Médicos recientes</h2>
-          <a href="/admin/doctors" className="text-xs text-blue-600 hover:underline">Ver todos →</a>
+          <a href="/admin/nutricionistas" className="text-xs text-blue-600 hover:underline">Ver todos →</a>
         </div>
         {(recentDoctors ?? []).length === 0 ? (
           <p className="px-5 py-8 text-sm text-gray-400 text-center">Sin médicos registrados aún.</p>
@@ -63,7 +63,7 @@ export default async function AdminDashboard() {
                     <p className="font-medium text-gray-900">{d.name}</p>
                     <p className="text-xs text-gray-400">{d.email}</p>
                   </td>
-                  <td className="px-5 py-3 text-gray-500">{d.specialty ?? '—'}</td>
+                  <td className="px-5 py-3 text-gray-500">{d .specialization?? '—'}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">
                     {new Date(d.created_at).toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </td>

@@ -8,7 +8,7 @@ export default async function Home() {
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase
-    .from('doctors')
+    .from('nutritionists')
     .select('role')
     .eq('id', user.id)
     .single()

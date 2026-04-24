@@ -7,11 +7,11 @@ import { toast } from 'sonner'
 type Props = {
   open: boolean
   onClose: () => void
-  doctorId: string
+  nutritionistId: string
   onCreated: () => void
 }
 
-export default function NewPatientDrawer({ open, onClose, doctorId, onCreated }: Props) {
+export default function NewPatientDrawer({ open, onClose, nutritionistId, onCreated }: Props) {
   const supabase = createClient()
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
@@ -59,7 +59,7 @@ export default function NewPatientDrawer({ open, onClose, doctorId, onCreated }:
 
     setLoading(true)
     const { error } = await supabase.from('patients').insert({
-      doctor_id: doctorId,
+      nutritionist_id: nutritionistId,
       name: name.trim(),
       age: age ? Number(age) : null,
       sex: sex || null,

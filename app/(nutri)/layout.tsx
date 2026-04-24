@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import AdminNav from '@/components/AdminNav'
+import NutriNav from '@/components/NutriNav'
 
-export default async function AdminLayout({
+export default async function DoctorLayout({
   children,
 }: {
   children: React.ReactNode
@@ -12,17 +12,15 @@ export default async function AdminLayout({
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  const { data: nutritionist } = await supabase
     .from('nutritionists')
-    .select('name, role')
+    .select('name, specialization')
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') redirect('/dashboard')
-
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <AdminNav adminName={profile.name} />
+      <NutriNav nutritionistName={nutritionist?.name ?? 'Doctor'} />
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>

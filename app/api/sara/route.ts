@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import DOMPurify from 'isomorphic-dompurify'
 
+type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string }
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -18,71 +20,97 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Message required' }, { status: 400 })
   }
 
-  // Obtener historial del paciente si se seleccionó uno
   let patientContext = ''
   if (patientId) {
     const { data: patient } = await supabase
       .from('patients')
-      .select('name, age, sex, notes')
+      .select('name, age, sex, notes, height_cm, activity_level, dietary_restrictions, allergies, initial_goal')
       .eq('id', patientId)
-      .eq('doctor_id', user.id)
+      .eq('nutritionist_id', user.id)
       .single()
 
-    const { data: visits } = await supabase
-      .from('visits')
-      .select('date, notes, diagnosis, next_visit')
+    const { data: consultations } = await supabase
+      .from('consultations')
+      .select('date, notes, objective, next_consultation')
       .eq('patient_id', patientId)
-      .eq('doctor_id', user.id)
+      .eq('nutritionist_id', user.id)
       .order('date', { ascending: false })
+      .limit(5)
+
+    const { data: measurements } = await supabase
+      .from('measurements')
+      .select('measured_at, weight_kg, body_fat_pct, waist_cm, bmi')
+      .eq('patient_id', patientId)
+      .eq('nutritionist_id', user.id)
+      .order('measured_at', { ascending: false })
       .limit(5)
 
     if (patient) {
       patientContext = `
-Paciente seleccionado: ${patient.name}, ${patient.age ?? '?'} años, sexo: ${patient.sex ?? 'no especificado'}
+Paciente: ${patient.name}, ${patient.age ?? '?'} años, sexo: ${patient.sex ?? 'no especificado'}, estatura: ${patient.height_cm ?? '?'} cm
+Nivel de actividad: ${patient.activity_level ?? 'no registrado'}
+Objetivo inicial: ${patient.initial_goal ?? 'no registrado'}
+Restricciones: ${patient.dietary_restrictions ?? 'ninguna'} | Alergias: ${patient.allergies ?? 'ninguna'}
 Notas generales: ${patient.notes ?? 'ninguna'}
 
-Últimas atenciones:
-${visits?.map(v => `- ${new Date(v.date).toLocaleDateString('es')}: ${v.diagnosis ?? 'sin diagnóstico'} | ${v.notes?.slice(0, 200) ?? 'sin notas'}`).join('\n') ?? 'ninguna'}
+Últimas mediciones:
+${measurements?.map(m => `- ${new Date(m.measured_at).toLocaleDateString('es')}: ${m.weight_kg ?? '?'} kg, ${m.body_fat_pct ?? '?'}% grasa, IMC ${m.bmi ?? '?'}, cintura ${m.waist_cm ?? '?'} cm`).join('\n') ?? 'sin registro'}
+
+Últimas consultas:
+${consultations?.map(c => `- ${new Date(c.date).toLocaleDateString('es')}: ${c.objective ?? 'sin objetivo registrado'} | ${c.notes?.slice(0, 200) ?? 'sin notas'}`).join('\n') ?? 'ninguna'}
 `
     }
   }
 
-  const systemPrompt = `Eres Sara, una asistente clínica de IA para médicos privados en Latinoamérica.
-Ayudas con consultas clínicas, medicamentos, diagnósticos diferenciales y gestión de pacientes.
-Eres concisa, precisa y siempre recuerdas al médico que tus respuestas son orientativas y no reemplazan el criterio clínico.
+  const systemPrompt = `Eres Sara, una asistente de IA para nutricionistas clínicos individuales en Latinoamérica.
+Ayudas con interpretación de mediciones antropométricas, composición de planes alimentarios, ajustes de macronutrientes según objetivo (reducción, mantenimiento, aumento de masa magra), y gestión de pacientes.
+Conoces RDA/DRI, métodos de cálculo de gasto energético (Mifflin-St Jeor, Harris-Benedict, Katch-McArdle), estrategias dietéticas (mediterránea, baja en carbohidratos, DASH, FODMAP, cetogénica cuando es clínicamente apropiada), manejo nutricional de diabetes tipo 2, dislipidemia, embarazo, deporte y patologías digestivas.
+No das diagnósticos médicos ni prescribes fármacos. Si detectas señales clínicas (dolor, síntomas agudos, banderas rojas) recomiendas derivación al médico tratante.
+Eres concisa, precisa y recuerdas al nutricionista que tus respuestas son orientativas y no reemplazan su criterio profesional.
 Responde siempre en español.
 ${patientContext ? `\nContexto del paciente:\n${patientContext}` : ''}`
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.OPENROUTER_API_KEY
 
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'your-openrouter-key-here') {
     return NextResponse.json({
-      reply: 'Sara IA requiere configurar ANTHROPIC_API_KEY en las variables de entorno.',
+      reply: 'Sara IA requiere configurar OPENROUTER_API_KEY en las variables de entorno.',
     })
   }
 
+  const history: ChatMessage[] = (body.history ?? [])
+    .filter((m: ChatMessage) => m.role === 'user' || m.role === 'assistant')
+    .slice(-6)
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://sara-asistente.local',
+        'X-Title': 'Sara Asistente',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'deepseek/deepseek-chat-v3.1',
         max_tokens: 1024,
-        system: systemPrompt,
         messages: [
-          ...(body.history ?? []).slice(-6), // últimos 6 mensajes de contexto
+          { role: 'system', content: systemPrompt },
+          ...history,
           { role: 'user', content: message },
         ],
       }),
     })
 
     const data = await response.json()
-    const reply = data.content?.[0]?.text ?? 'Sin respuesta.'
 
+    if (!response.ok) {
+      return NextResponse.json({
+        reply: `Error del proveedor: ${data.error?.message ?? 'respuesta inesperada'}`,
+      })
+    }
+
+    const reply = data.choices?.[0]?.message?.content ?? 'Sin respuesta.'
     return NextResponse.json({ reply })
   } catch {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })

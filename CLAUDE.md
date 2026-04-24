@@ -1,5 +1,20 @@
 @AGENTS.md
 
+## Product scope
+
+Sara Asistente es una plataforma web para **nutricionistas clínicos individuales** que gestionan su consulta privada y la atención de pacientes. No es una app de wellness/fitness, no es un EMR médico genérico, no es un portal B2B para centros de salud grandes. Todo código, copy y feature nueva debe alinearse al dominio nutricional (planes alimentarios, mediciones antropométricas, seguimiento de composición corporal, diario alimentario), no al dominio médico genérico.
+
+Léxico autoritativo: paciente, consulta, plan alimentario, evaluación antropométrica, mediciones, seguimiento. No usar: receta, prescripción, diagnóstico, cita de revisión, signos vitales.
+
+## Design System
+
+Siempre leer [DESIGN.md](./DESIGN.md) antes de cualquier decisión visual o de UI. Todas las fuentes, colores, espaciado y dirección estética están definidos ahí. No desviarse sin aprobación explícita del usuario. En modo QA, marcar todo código que no cumpla DESIGN.md.
+
+Tokens rápidos (referencia, la fuente es DESIGN.md):
+- Display font: Instrument Serif · Body: Geist · Data: Geist Mono
+- Primary: sage `#4A7C59` · Base: cream `#FAFAF8` · Text: graphite `#1A1F1C`
+- Base spacing: 8px · Radius: 6/8/12px · Motion: minimal-functional (150ms default)
+
 ## Skill routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill
