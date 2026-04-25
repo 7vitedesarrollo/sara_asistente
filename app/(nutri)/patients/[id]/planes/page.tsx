@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import PlanesClient from './PlanesClient'
 
-export default async function PrescriptionsPage({
+export default async function PlanesPage({
   params,
 }: {
   params: Promise<{ id: string }>
@@ -12,7 +12,7 @@ export default async function PrescriptionsPage({
 
   const { data: mealPlans } = await supabase
     .from('meal_plans')
-    .select('id, medications, instructions, created_at')
+    .select('id, summary, instructions, structure, daily_kcal, daily_protein_g, start_date, end_date, created_at')
     .eq('patient_id', id)
     .eq('nutritionist_id', user!.id)
     .order('created_at', { ascending: false })
