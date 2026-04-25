@@ -87,12 +87,12 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
       />
 
       {/* Drawer */}
-      <aside className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl z-50 flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Nuevo paciente</h2>
+      <aside className="fixed right-0 top-0 h-full w-full max-w-sm bg-cream-raised shadow-xl z-50 flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="font-semibold text-graphite">Nuevo paciente</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-graphite-subtle hover:text-graphite-muted text-2xl leading-none"
             aria-label="Cerrar"
           >
             ×
@@ -101,8 +101,8 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-graphite-muted mb-1">
+              Nombre <span className="text-terracotta">*</span>
             </label>
             <input
               type="text"
@@ -110,16 +110,16 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
               onChange={e => { setName(e.target.value); setErrors(prev => ({ ...prev, name: '' })) }}
               placeholder="Nombre completo"
               autoFocus
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-400' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg ${
+                errors.name ? 'border-red-400' : 'border-border-strong'
               }`}
             />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+            {errors.name && <p className="text-terracotta text-xs mt-1">{errors.name}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Edad</label>
+              <label className="block text-sm font-medium text-graphite-muted mb-1">Edad</label>
               <input
                 type="number"
                 value={age}
@@ -127,19 +127,19 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
                 placeholder="años"
                 min={0}
                 max={120}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.age ? 'border-red-400' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg ${
+                  errors.age ? 'border-red-400' : 'border-border-strong'
                 }`}
               />
-              {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
+              {errors.age && <p className="text-terracotta text-xs mt-1">{errors.age}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sexo</label>
+              <label className="block text-sm font-medium text-graphite-muted mb-1">Sexo</label>
               <select
                 value={sex}
                 onChange={e => setSex(e.target.value as typeof sex)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg bg-cream-raised"
               >
                 <option value="">—</option>
                 <option value="M">Masculino</option>
@@ -150,29 +150,29 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+            <label className="block text-sm font-medium text-graphite-muted mb-1">Teléfono</label>
             <input
               type="tel"
               value={phone}
               onChange={e => setPhone(e.target.value)}
               placeholder="+593 999 000 000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg"
             />
           </div>
         </form>
 
-        <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
+        <div className="px-6 py-4 border-t border-border flex gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex-1 py-2 border border-border rounded-lg text-sm text-graphite-muted hover:bg-cream-sunken transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleSubmit as never}
             disabled={loading}
-            className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="flex-1 py-2 bg-sage text-white rounded-lg text-sm font-medium hover:bg-[#3D6A4A] disabled:opacity-50 transition-colors"
           >
             {loading ? 'Guardando...' : 'Crear paciente'}
           </button>

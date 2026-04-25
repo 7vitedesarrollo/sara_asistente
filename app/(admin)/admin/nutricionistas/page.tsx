@@ -14,23 +14,22 @@ export default async function AdminDoctorsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nutricionistas</h1>
+      <h1 className="font-display text-3xl text-graphite mb-6">Nutricionistas</h1>
 
       {(nutritionists ?? []).length === 0 ? (
-        <div className="bg-white border border-gray-100 rounded-xl p-12 text-center text-gray-400">
-          <p className="text-3xl mb-2">👨‍⚕️</p>
+        <div className="bg-cream-raised border border-border rounded-xl p-12 text-center text-graphite-subtle">
           <p className="text-sm">Sin médicos registrados aún.</p>
           <p className="text-xs mt-1">Se agregan automáticamente cuando un médico se registra.</p>
         </div>
       ) : (
-        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+        <div className="bg-cream-raised border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-cream-sunken">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium text-gray-400">Nutricionista</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-gray-400">Especialidad</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-gray-400">Pacientes</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-gray-400">Registrado</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-graphite-subtle">Nutricionista</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-graphite-subtle">Especialidad</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-graphite-subtle">Pacientes</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-graphite-subtle">Registrado</th>
               </tr>
             </thead>
             <tbody>
@@ -39,14 +38,14 @@ export default async function AdminDoctorsPage() {
                   ? (d.patients[0] as { count: number } | undefined)?.count ?? 0
                   : 0
                 return (
-                  <tr key={d.id} className="border-t border-gray-50 hover:bg-gray-50">
+                  <tr key={d.id} className="border-t border-gray-50 hover:bg-cream-sunken">
                     <td className="px-5 py-3">
-                      <p className="font-medium text-gray-900">{d.name}</p>
-                      <p className="text-xs text-gray-400">{d.email}</p>
+                      <p className="font-medium text-graphite">{d.name}</p>
+                      <p className="text-xs text-graphite-subtle">{d.email}</p>
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{d .specialization?? '—'}</td>
-                    <td className="px-5 py-3 text-gray-700 font-medium">{patientCount}</td>
-                    <td className="px-5 py-3 text-gray-400 text-xs">
+                    <td className="px-5 py-3 text-graphite-muted">{d .specialization?? '—'}</td>
+                    <td className="px-5 py-3 text-graphite-muted font-medium">{patientCount}</td>
+                    <td className="px-5 py-3 text-graphite-subtle text-xs">
                       {new Date(d.created_at).toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                   </tr>

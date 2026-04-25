@@ -24,9 +24,9 @@ export default function AdminNav({ adminName }: { adminName: string }) {
   return (
     <aside className="w-56 bg-gray-900 text-gray-100 flex flex-col shrink-0">
       <div className="px-4 py-5 border-b border-gray-700">
-        <span className="text-xl font-bold text-white">sara</span>
+        <span className="font-display text-2xl text-white">sara</span>
         <span className="ml-2 text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded font-medium">admin</span>
-        <p className="text-xs text-gray-400 mt-0.5 truncate">{adminName}</p>
+        <p className="text-xs text-graphite-subtle mt-0.5 truncate">{adminName}</p>
       </div>
 
       <nav className="flex-1 px-2 py-4 space-y-1">
@@ -39,7 +39,7 @@ export default function AdminNav({ adminName }: { adminName: string }) {
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                 active
                   ? 'bg-gray-700 text-white font-medium'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'
+                  : 'text-graphite-subtle hover:bg-gray-800 hover:text-gray-100'
               }`}
             >
               <span className="text-base">{icon}</span>
@@ -52,7 +52,7 @@ export default function AdminNav({ adminName }: { adminName: string }) {
       <div className="px-2 py-4 border-t border-gray-700">
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm text-gray-500 hover:bg-gray-800 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm text-graphite-muted hover:bg-gray-800 hover:text-graphite-subtle transition-colors"
         >
           <span>↩</span>
           Cerrar sesión

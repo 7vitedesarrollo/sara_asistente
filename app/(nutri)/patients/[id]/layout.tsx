@@ -33,7 +33,7 @@ export default async function PatientLayout({
           ← Volver
         </a>
         <div className="flex items-baseline gap-3">
-          <h1 className="text-xl font-bold text-gray-900">{patient.name}</h1>
+          <h1 className="font-display text-3xl text-graphite">{patient.name}</h1>
           <span className="text-sm text-gray-400">
             {[patient.age ? `${patient.age} años` : null, patient.sex].filter(Boolean).join(' · ')}
           </span>

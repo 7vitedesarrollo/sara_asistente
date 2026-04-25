@@ -27,44 +27,44 @@ export default async function AdminDashboard() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Panel de administración</h1>
-      <p className="text-sm text-gray-400 mb-8">Vista global de la plataforma sara</p>
+      <h1 className="font-display text-3xl text-graphite mb-2">Panel de administración</h1>
+      <p className="text-sm text-graphite-subtle mb-8">Vista global de la plataforma sara</p>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         {stats.map(s => (
-          <div key={s.label} className="bg-white border border-gray-100 rounded-xl p-5">
+          <div key={s.label} className="bg-cream-raised border border-border rounded-xl p-5">
             <p className="text-3xl mb-1">{s.icon}</p>
-            <p className="text-3xl font-bold text-gray-900">{s.value}</p>
-            <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+            <p className="font-display text-4xl text-graphite">{s.value}</p>
+            <p className="text-xs text-graphite-subtle mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="font-semibold text-gray-800 text-sm">Médicos recientes</h2>
-          <a href="/admin/nutricionistas" className="text-xs text-blue-600 hover:underline">Ver todos →</a>
+      <div className="bg-cream-raised border border-border rounded-xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex justify-between items-center">
+          <h2 className="font-semibold text-graphite text-sm">Médicos recientes</h2>
+          <a href="/admin/nutricionistas" className="text-xs text-sage hover:underline">Ver todos →</a>
         </div>
         {(recentDoctors ?? []).length === 0 ? (
-          <p className="px-5 py-8 text-sm text-gray-400 text-center">Sin médicos registrados aún.</p>
+          <p className="px-5 py-8 text-sm text-graphite-subtle text-center">Sin médicos registrados aún.</p>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-cream-sunken">
               <tr>
-                <th className="px-5 py-2 text-left text-xs font-medium text-gray-400">Nombre</th>
-                <th className="px-5 py-2 text-left text-xs font-medium text-gray-400">Especialidad</th>
-                <th className="px-5 py-2 text-left text-xs font-medium text-gray-400">Registrado</th>
+                <th className="px-5 py-2 text-left text-xs font-medium text-graphite-subtle">Nombre</th>
+                <th className="px-5 py-2 text-left text-xs font-medium text-graphite-subtle">Especialidad</th>
+                <th className="px-5 py-2 text-left text-xs font-medium text-graphite-subtle">Registrado</th>
               </tr>
             </thead>
             <tbody>
               {(recentDoctors ?? []).map(d => (
                 <tr key={d.id} className="border-t border-gray-50">
                   <td className="px-5 py-3">
-                    <p className="font-medium text-gray-900">{d.name}</p>
-                    <p className="text-xs text-gray-400">{d.email}</p>
+                    <p className="font-medium text-graphite">{d.name}</p>
+                    <p className="text-xs text-graphite-subtle">{d.email}</p>
                   </td>
-                  <td className="px-5 py-3 text-gray-500">{d .specialization?? '—'}</td>
-                  <td className="px-5 py-3 text-gray-400 text-xs">
+                  <td className="px-5 py-3 text-graphite-muted">{d .specialization?? '—'}</td>
+                  <td className="px-5 py-3 text-graphite-subtle text-xs">
                     {new Date(d.created_at).toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </td>
                 </tr>

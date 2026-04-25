@@ -31,19 +31,19 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">Métricas</h1>
+      <h1 className="font-display text-3xl text-graphite mb-6">Métricas</h1>
 
       <div className="grid grid-cols-2 gap-4">
         {stats.map(s => (
-          <div key={s.label} className="bg-white border border-gray-100 rounded-xl p-5">
+          <div key={s.label} className="bg-cream-raised border border-border rounded-xl p-5">
             <p className="text-3xl mb-1">{s.icon}</p>
-            <p className="text-3xl font-bold text-gray-900">{s.value}</p>
-            <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+            <p className="font-display text-4xl text-graphite">{s.value}</p>
+            <p className="text-xs text-graphite-subtle mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-gray-300 text-center mt-8">
+      <p className="text-xs text-graphite-subtle text-center mt-8">
         Métricas adicionales (gráficos, tendencias) disponibles en próximas versiones.
       </p>
     </div>

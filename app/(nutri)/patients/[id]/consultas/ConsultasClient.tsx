@@ -72,7 +72,7 @@ export default function ConsultasClient({ consultations: initial, patientId, nut
       {!showNewForm ? (
         <button
           onClick={() => setShowNewForm(true)}
-          className="w-full border-2 border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-colors"
+          className="w-full border-2 border-dashed border-border rounded-xl py-3 text-sm text-graphite-subtle hover:border-sage hover:text-sage transition-colors"
         >
           + Nueva atención
         </button>
@@ -85,9 +85,8 @@ export default function ConsultasClient({ consultations: initial, patientId, nut
 
       {/* Lista de atenciones */}
       {consultations.length === 0 && !showNewForm && (
-        <div className="text-center py-12 text-gray-400">
-          <p className="text-3xl mb-2">📋</p>
-          <p className="text-sm">Sin atenciones registradas.</p>
+        <div className="text-center py-12 text-graphite-subtle">
+          <p className="font-display italic text-2xl text-graphite-muted">Aún sin consultas registradas.</p>
         </div>
       )}
 
@@ -136,18 +135,18 @@ function VisitCard({
   })
 
   return (
-    <div ref={cardRef} className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+    <div ref={cardRef} className="bg-cream-raised border border-border rounded-xl overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-cream-sunken transition-colors"
       >
         <div>
-          <p className="text-sm font-medium text-gray-900">{date}</p>
+          <p className="text-sm font-medium text-graphite">{date}</p>
           {consultation.objective && (
-            <p className="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{consultation.objective}</p>
+            <p className="text-xs text-graphite-subtle mt-0.5 truncate max-w-xs">{consultation.objective}</p>
           )}
         </div>
-        <span className="text-gray-400 text-lg">{expanded ? '▲' : '▼'}</span>
+        <span className="text-graphite-subtle text-lg">{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
@@ -177,48 +176,48 @@ function VisitForm({
   const [nextConsultation, setNextConsultation] = useState('')
 
   return (
-    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
+    <div className="bg-sage-bg border border-blue-100 rounded-xl p-4 space-y-3">
       <h3 className="text-sm font-semibold text-blue-800">Nueva atención</h3>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Notas clínicas</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Notas clínicas</label>
         <textarea
           value={notes}
           onChange={e => setNotes(e.target.value)}
           placeholder="Motivo de consulta, examen físico, hallazgos..."
           rows={4}
           autoFocus
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg resize-none"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Objetivo de consulta</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Objetivo de consulta</label>
         <input
           type="text"
           value={objective}
           onChange={e => setObjective(e.target.value)}
           placeholder="Ej: Apendicitis aguda"
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Próxima cita</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Próxima cita</label>
         <input
           type="date"
           value={nextConsultation}
           onChange={e => setNextConsultation(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg"
         />
       </div>
       <div className="flex gap-2 pt-1">
         <button
           onClick={onCancel}
-          className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-white transition-colors"
+          className="flex-1 py-2 border border-border rounded-lg text-sm text-graphite-muted hover:bg-cream-raised transition-colors"
         >
           Cancelar
         </button>
         <button
           onClick={() => onSave({ notes, objective, next_consultation: nextConsultation || null })}
-          className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="flex-1 py-2 bg-sage text-white rounded-lg text-sm font-medium hover:bg-[#3D6A4A] transition-colors"
         >
           Guardar atención
         </button>
@@ -278,37 +277,37 @@ function EditVisitForm({
   }
 
   return (
-    <div className="px-4 pb-4 space-y-3 border-t border-gray-100 pt-3">
+    <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Notas clínicas</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Notas clínicas</label>
         <textarea
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={5}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg resize-none"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Objetivo de consulta</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Objetivo de consulta</label>
         <input
           type="text"
           value={objective}
           onChange={e => setObjective(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Próxima cita</label>
+        <label className="block text-xs font-medium text-graphite-muted mb-1">Próxima cita</label>
         <input
           type="date"
           value={nextConsultation}
           onChange={e => setNextConsultation(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-[3px] focus:ring-sage-bg"
         />
       </div>
 
       {saveError && (
-        <p className="text-red-600 text-xs">
+        <p className="text-terracotta text-xs">
           Error al guardar. <button onClick={handleSave} className="underline">Reintentar →</button>
         </p>
       )}
@@ -316,14 +315,14 @@ function EditVisitForm({
       <div className="flex gap-2 pt-1">
         <button
           onClick={onClose}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          className="px-4 py-2 border border-border rounded-lg text-sm text-graphite-muted hover:bg-cream-sunken transition-colors"
         >
           Cerrar ×
         </button>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="flex-1 py-2 bg-sage text-white rounded-lg text-sm font-medium hover:bg-[#3D6A4A] disabled:opacity-50 transition-colors"
         >
           {saving ? 'Guardando...' : 'Guardar nota'}
         </button>
