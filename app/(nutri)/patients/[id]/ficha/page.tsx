@@ -20,5 +20,21 @@ export default async function FichaPage({
 
   if (!patient) notFound()
 
-  return <FichaClient patient={patient} nutritionistId={user!.id} />
+  const { data: latestMeasurement } = await supabase
+    .from('measurements')
+    .select('weight_kg, body_fat_pct')
+    .eq('patient_id', id)
+    .eq('nutritionist_id', user!.id)
+    .order('measured_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return (
+    <FichaClient
+      patient={patient}
+      latestWeightKg={latestMeasurement?.weight_kg ?? null}
+      latestBodyFatPct={latestMeasurement?.body_fat_pct ?? null}
+      nutritionistId={user!.id}
+    />
+  )
 }
