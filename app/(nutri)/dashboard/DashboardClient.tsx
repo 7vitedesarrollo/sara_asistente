@@ -50,22 +50,24 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
   })
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
-      {/* Buscador — elemento #1 */}
-      <div className="relative mb-6">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Buscador */}
+      <div className="relative mb-8">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-graphite-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+        </svg>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar paciente por nombre..."
-          className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+          placeholder="Buscar paciente por nombre…"
+          className="w-full pl-10 pr-4 py-2.5 bg-cream-raised border border-border-strong rounded-md text-sm text-graphite placeholder:text-graphite-subtle focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg transition-all"
           autoFocus
         />
         {search && (
           <button
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-graphite-subtle hover:text-graphite text-lg leading-none"
           >
             ×
           </button>
@@ -74,9 +76,9 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
 
       {/* Resultados de búsqueda */}
       {search.trim() && (
-        <div className="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="mb-8 bg-cream-raised rounded-md border border-border overflow-hidden">
           {searchResults.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-gray-400 text-center">
+            <p className="px-4 py-6 text-sm text-graphite-subtle text-center">
               Sin resultados para &ldquo;{search}&rdquo;
             </p>
           ) : (
@@ -85,10 +87,10 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
                 <li key={p.id}>
                   <button
                     onClick={() => handlePatientClick(p.id)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                    className="w-full px-4 py-3 text-left hover:bg-cream-sunken transition-colors border-b border-border last:border-0"
                   >
-                    <span className="font-medium text-sm text-gray-900">{p.name}</span>
-                    <span className="text-xs text-gray-400 ml-2">
+                    <span className="font-medium text-sm text-graphite">{p.name}</span>
+                    <span className="text-xs text-graphite-subtle ml-2 font-mono">
                       {p.age ? `${p.age} años` : ''} {p.sex ?? ''}
                     </span>
                   </button>
@@ -102,18 +104,18 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
       {/* Header del día */}
       {!search.trim() && (
         <>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-end justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 capitalize">{today}</h2>
-              <p className="text-sm text-gray-400">
+              <h2 className="font-display text-3xl text-graphite capitalize leading-tight">{today}</h2>
+              <p className="text-sm text-graphite-muted mt-1">
                 {todayAppointments.length === 0
-                  ? 'Sin citas hoy'
-                  : `${todayAppointments.length} cita${todayAppointments.length > 1 ? 's' : ''}`}
+                  ? 'Sin consultas agendadas hoy'
+                  : `${todayAppointments.length} consulta${todayAppointments.length > 1 ? 's' : ''} hoy`}
               </p>
             </div>
             <button
               onClick={() => setShowDrawer(true)}
-              className="flex items-center gap-1.5 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="flex items-center gap-1.5 bg-sage text-white text-sm px-4 py-2 rounded-md hover:bg-[#3D6A4A] transition-colors font-medium"
             >
               <span className="text-base leading-none">+</span>
               Nuevo paciente
@@ -123,7 +125,7 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
           {/* Pendientes */}
           {pending.length > 0 && (
             <section className="mb-6">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+              <h3 className="text-[11px] font-mono font-medium text-graphite-subtle uppercase tracking-widest mb-3">
                 Pendientes · {pending.length}
               </h3>
               <ul className="space-y-2">
@@ -141,7 +143,7 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
           {/* Atendidos */}
           {attended.length > 0 && (
             <section className="mb-6">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+              <h3 className="text-[11px] font-mono font-medium text-graphite-subtle uppercase tracking-widest mb-3">
                 Atendidos · {attended.length}
               </h3>
               <ul className="space-y-2 opacity-60">
@@ -159,14 +161,18 @@ export default function DashboardClient({ todayAppointments, allPatients, nutrit
 
           {/* Estado vacío */}
           {todayAppointments.length === 0 && (
-            <div className="text-center py-16 text-gray-400">
-              <p className="text-4xl mb-3">📋</p>
-              <p className="text-sm">No hay pacientes registrados hoy.</p>
+            <div className="text-center py-20 border border-dashed border-border rounded-lg">
+              <p className="font-display italic text-2xl text-graphite-muted">
+                Día tranquilo.
+              </p>
+              <p className="text-sm text-graphite-subtle mt-2">
+                Sin consultas agendadas para hoy.
+              </p>
               <button
                 onClick={() => setShowDrawer(true)}
-                className="mt-3 text-sm text-blue-600 hover:underline"
+                className="mt-4 text-sm text-sage font-medium hover:underline"
               >
-                + Agregar paciente
+                Agregar paciente
               </button>
             </div>
           )}
@@ -205,18 +211,18 @@ function AppointmentCard({
     <li>
       <button
         onClick={onClick}
-        className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3 text-left hover:border-blue-200 hover:shadow-sm transition-all"
+        className="w-full bg-cream-raised border border-border rounded-md px-4 py-3 text-left hover:border-sage hover:shadow-sm transition-all"
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className={`font-medium text-sm ${done ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className={`font-display text-lg ${done ? 'line-through text-graphite-subtle' : 'text-graphite'}`}>
               {appointment.patient?.name ?? 'Paciente'}
             </p>
             {appointment.reason && (
-              <p className="text-xs text-gray-400 mt-0.5">{appointment.reason}</p>
+              <p className="text-xs text-graphite-muted mt-0.5 truncate">{appointment.reason}</p>
             )}
           </div>
-          <span className="text-xs text-gray-400 font-mono">{time}</span>
+          <span className="text-xs text-graphite-muted font-mono shrink-0">{time}</span>
         </div>
       </button>
     </li>

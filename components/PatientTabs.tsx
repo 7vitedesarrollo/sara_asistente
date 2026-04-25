@@ -4,18 +4,19 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const tabs = [
-  { label: 'Consultas', path: 'atenciones' },
   { label: 'Ficha', path: 'ficha' },
-  { label: 'Planes alimentarios', path: 'prescriptions' },
-  { label: 'Exámenes', path: 'ordenes' },
-  { label: 'Certificados', path: 'certificados' },
+  { label: 'Mediciones', path: 'mediciones' },
+  { label: 'Consultas', path: 'consultas' },
+  { label: 'Planes alimentarios', path: 'planes' },
+  { label: 'Referencias lab.', path: 'referencias-lab' },
+  { label: 'Documentos', path: 'documentos' },
 ]
 
 export default function PatientTabs({ patientId }: { patientId: string }) {
   const pathname = usePathname()
 
   return (
-    <nav className="flex gap-1 border-b border-gray-200 overflow-x-auto">
+    <nav className="flex gap-1 border-b border-border overflow-x-auto">
       {tabs.map(tab => {
         const href = `/patients/${patientId}/${tab.path}`
         const active = pathname === href
@@ -23,10 +24,10 @@ export default function PatientTabs({ patientId }: { patientId: string }) {
           <Link
             key={tab.path}
             href={href}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-4 py-2.5 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors ${
               active
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                ? 'border-sage text-sage font-medium'
+                : 'border-transparent text-graphite-muted hover:text-graphite hover:border-border-strong'
             }`}
           >
             {tab.label}
