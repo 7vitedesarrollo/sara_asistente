@@ -10,7 +10,7 @@ Trabajo diferido tras el pivote a nutricionistas clínicos (2026-04-24).
 - [x] Implementar `/mediciones` (timeline antropométrico con tabla `measurements`, IMC autocalculado, delta vs medición previa) — commit `603ed08`
 - [x] Editor del plan alimentario semanal (7 días × 5 momentos en grid editable, JSONB `meal_plans.structure`, kcal/proteína target, rango de fechas) — commit `ec955b7`
 - [x] Calculadora de gasto energético (Mifflin-St Jeor + Katch-McArdle si hay % grasa, factor de actividad, sugerencias por objetivo) — commit `db7da42`
-- [ ] Export PDF del plan alimentario para enviar por correo al paciente
+- [x] Export PDF del plan alimentario (ruta `/print/plan/[planId]` con `@media print` A4, sin librerías de PDF) — commit `8cfef47`
 - [ ] Validar con 1 nutricionista real: agenda 10 pacientes, graba 5 consultas, emite 3 planes
 
 ## Fase 2 — 3-5 nutricionistas pagando
