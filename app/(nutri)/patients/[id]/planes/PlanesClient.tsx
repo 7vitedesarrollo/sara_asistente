@@ -335,6 +335,19 @@ function PlanCard({
 
       {expanded && (
         <div className="border-t border-border p-5 space-y-4">
+          <div className="flex justify-end">
+            <a
+              href={`/print/plan/${plan.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium px-4 py-2 rounded-md bg-sage text-white hover:bg-[#3D6A4A] transition-colors inline-flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" />
+              </svg>
+              Descargar PDF
+            </a>
+          </div>
           {plan.structure && Object.keys(plan.structure).length > 0 ? (
             <div className="overflow-x-auto -mx-1 px-1">
               <div className="min-w-[900px] grid grid-cols-[120px_repeat(7,minmax(110px,1fr))] gap-px bg-border rounded-md overflow-hidden border border-border">
