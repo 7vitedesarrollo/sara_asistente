@@ -15,7 +15,7 @@ Trabajo diferido tras el pivote a nutricionistas clínicos (2026-04-24).
 
 ## Fase 2 — 3-5 nutricionistas pagando
 
-- [ ] Recordatorios automáticos de citas (email / WhatsApp)
+- [x] Recordatorios automáticos de citas (email vía Resend con fallback log-only, cron Vercel diario, botón manual desde Agenda) — commit `292fd31`. Pendiente: WhatsApp (requiere Twilio Business).
 - [x] Vista gráfica de evolución antropométrica — chart SVG custom con selector Peso/% Grasa/IMC/Cintura, tooltip y trend total (commit `2bc1b4b`)
 - [x] Librería de planes alimentarios reutilizables — tabla `meal_plan_templates`, ruta `/plantillas` con CRUD, "Cargar desde plantilla" en PlanForm + "Guardar como plantilla" en PlanCard (commit `9fd2323`)
 - [ ] Diario alimentario del paciente (tabla `food_diary` + portal paciente mínimo)
