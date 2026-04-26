@@ -109,7 +109,10 @@ export default function MeasurementsClient({
           </p>
         </div>
       ) : (
-        <MeasurementTable measurements={measurements} />
+        <>
+          <EvolutionChart measurements={measurements} />
+          <MeasurementTable measurements={measurements} />
+        </>
       )}
     </div>
   )
@@ -290,4 +293,242 @@ function Cell({
       )}
     </div>
   )
+}
+
+// ─── Evolution Chart (SVG) ───────────────────────────────────────────────
+
+type MetricKey = 'weight_kg' | 'body_fat_pct' | 'bmi' | 'waist_cm'
+
+const METRICS: { key: MetricKey; label: string; unit: string; betterIsLower: boolean }[] = [
+  { key: 'weight_kg', label: 'Peso', unit: 'kg', betterIsLower: true },
+  { key: 'body_fat_pct', label: '% Grasa', unit: '%', betterIsLower: true },
+  { key: 'bmi', label: 'IMC', unit: '', betterIsLower: true },
+  { key: 'waist_cm', label: 'Cintura', unit: 'cm', betterIsLower: true },
+]
+
+function EvolutionChart({ measurements }: { measurements: Measurement[] }) {
+  const [metricKey, setMetricKey] = useState<MetricKey>('weight_kg')
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+
+  // chronological ASC for the chart (input is DESC)
+  const points = [...measurements]
+    .reverse()
+    .map(m => ({ id: m.id, t: new Date(m.measured_at).getTime(), v: m[metricKey], date: m.measured_at }))
+    .filter((p): p is { id: string; t: number; v: number; date: string } => p.v != null)
+
+  const metric = METRICS.find(m => m.key === metricKey)!
+
+  // Count availability per metric for pill disabled state
+  const availability = METRICS.reduce((acc, m) => {
+    acc[m.key] = measurements.filter(x => x[m.key] != null).length
+    return acc
+  }, {} as Record<MetricKey, number>)
+
+  const W = 800
+  const H = 280
+  const PAD = { top: 24, right: 24, bottom: 36, left: 56 }
+  const chartW = W - PAD.left - PAD.right
+  const chartH = H - PAD.top - PAD.bottom
+
+  if (points.length < 2) {
+    return (
+      <div className="bg-cream-raised border border-border rounded-lg p-5">
+        <div className="flex items-baseline justify-between mb-4">
+          <h3 className="font-display text-xl text-graphite">Evolución</h3>
+          <MetricPills value={metricKey} onChange={setMetricKey} availability={availability} />
+        </div>
+        <div className="h-48 flex items-center justify-center border border-dashed border-border rounded-md">
+          <p className="font-display italic text-lg text-graphite-muted text-center">
+            {points.length === 0
+              ? `Aún no hay datos de ${metric.label.toLowerCase()}.`
+              : 'Registra al menos una medición más para ver la evolución.'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const tMin = points[0].t
+  const tMax = points[points.length - 1].t
+  const tRange = tMax - tMin || 1
+
+  const vMin = Math.min(...points.map(p => p.v))
+  const vMax = Math.max(...points.map(p => p.v))
+  const vPad = (vMax - vMin) * 0.15 || 1
+  const yMin = Math.max(0, vMin - vPad)
+  const yMax = vMax + vPad
+  const yRange = yMax - yMin
+
+  const xScale = (t: number) => PAD.left + ((t - tMin) / tRange) * chartW
+  const yScale = (v: number) => PAD.top + (1 - (v - yMin) / yRange) * chartH
+
+  // Y ticks (4)
+  const yTicks = [0, 1, 2, 3].map(i => yMin + (yRange / 3) * i)
+  // X ticks: show first, middle, last (or all if <=4 points)
+  const xTickIndices = points.length <= 4
+    ? points.map((_, i) => i)
+    : [0, Math.floor(points.length / 3), Math.floor(2 * points.length / 3), points.length - 1]
+
+  const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xScale(p.t).toFixed(2)} ${yScale(p.v).toFixed(2)}`).join(' ')
+
+  // Trend total
+  const total = points[points.length - 1].v - points[0].v
+  const totalGood = metric.betterIsLower ? total < 0 : total > 0
+  const trendColor = total === 0 ? 'text-graphite-muted' : totalGood ? 'text-sage-light' : 'text-amber'
+  const trendSign = total > 0 ? '+' : ''
+
+  const hovered = hoveredIdx != null ? points[hoveredIdx] : null
+
+  return (
+    <div className="bg-cream-raised border border-border rounded-lg p-5">
+      <div className="flex items-baseline justify-between gap-4 mb-4 flex-wrap">
+        <div>
+          <h3 className="font-display text-xl text-graphite leading-tight">Evolución de <em className="italic text-sage">{metric.label.toLowerCase()}</em></h3>
+          <p className="text-xs text-graphite-subtle font-mono uppercase tracking-widest mt-1">
+            {points.length} mediciones · {formatRange(points[0].date, points[points.length - 1].date)}
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className={`font-mono text-sm ${trendColor}`}>
+            {trendSign}{total.toFixed(metric.unit === '%' || metric.unit === '' ? 1 : 2)} {metric.unit}
+            <span className="text-graphite-subtle text-xs ml-1.5">total</span>
+          </div>
+          <MetricPills value={metricKey} onChange={setMetricKey} availability={availability} />
+        </div>
+      </div>
+
+      <div className="relative">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" preserveAspectRatio="none">
+          {/* Grid horizontal */}
+          {yTicks.map((tick, i) => (
+            <line
+              key={i}
+              x1={PAD.left} x2={W - PAD.right}
+              y1={yScale(tick)} y2={yScale(tick)}
+              stroke="var(--border)" strokeWidth="1"
+              strokeDasharray={i === 0 ? '0' : '2 4'}
+            />
+          ))}
+
+          {/* Y axis labels */}
+          {yTicks.map((tick, i) => (
+            <text
+              key={i}
+              x={PAD.left - 8} y={yScale(tick) + 4}
+              textAnchor="end"
+              className="fill-graphite-subtle"
+              fontSize="11"
+              fontFamily="var(--font-geist-mono), monospace"
+            >
+              {tick.toFixed(metric.unit === '%' || metric.unit === '' ? 1 : 1)}
+            </text>
+          ))}
+
+          {/* X axis labels */}
+          {xTickIndices.map(i => {
+            const p = points[i]
+            return (
+              <text
+                key={p.id}
+                x={xScale(p.t)} y={H - PAD.bottom + 18}
+                textAnchor={i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}
+                className="fill-graphite-subtle"
+                fontSize="11"
+                fontFamily="var(--font-geist-mono), monospace"
+              >
+                {new Date(p.date).toLocaleDateString('es', { day: '2-digit', month: 'short' })}
+              </text>
+            )
+          })}
+
+          {/* Línea (sage) */}
+          <path d={path} fill="none" stroke="var(--sage)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* Dots interactivos */}
+          {points.map((p, i) => (
+            <g key={p.id}>
+              {/* Hit area invisible más grande para hover */}
+              <circle
+                cx={xScale(p.t)} cy={yScale(p.v)} r="14"
+                fill="transparent"
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                style={{ cursor: 'pointer' }}
+              />
+              <circle
+                cx={xScale(p.t)} cy={yScale(p.v)}
+                r={hoveredIdx === i ? 6 : 4}
+                fill={hoveredIdx === i ? 'var(--sage)' : 'var(--cream)'}
+                stroke="var(--sage)" strokeWidth="2"
+                style={{ pointerEvents: 'none', transition: 'r 120ms' }}
+              />
+            </g>
+          ))}
+        </svg>
+
+        {/* Tooltip */}
+        {hovered && (
+          <div
+            className="absolute pointer-events-none bg-graphite text-cream rounded-md px-3 py-2 text-xs shadow-lg whitespace-nowrap"
+            style={{
+              left: `${(xScale(hovered.t) / W) * 100}%`,
+              top: `${(yScale(hovered.v) / H) * 100}%`,
+              transform: 'translate(-50%, calc(-100% - 12px))',
+            }}
+          >
+            <div className="font-mono">
+              {hovered.v.toFixed(metric.unit === '%' || metric.unit === '' ? 1 : 2)}
+              <span className="text-graphite-subtle ml-1">{metric.unit}</span>
+            </div>
+            <div className="text-[10px] font-mono uppercase tracking-wider text-graphite-subtle mt-0.5">
+              {new Date(hovered.date).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function MetricPills({
+  value, onChange, availability,
+}: {
+  value: MetricKey
+  onChange: (v: MetricKey) => void
+  availability: Record<MetricKey, number>
+}) {
+  return (
+    <div className="flex gap-1 bg-cream-sunken rounded-full p-1">
+      {METRICS.map(m => {
+        const disabled = availability[m.key] === 0
+        const active = value === m.key
+        return (
+          <button
+            key={m.key}
+            disabled={disabled}
+            onClick={() => onChange(m.key)}
+            className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+              active
+                ? 'bg-sage text-white'
+                : disabled
+                  ? 'text-graphite-subtle cursor-not-allowed opacity-50'
+                  : 'text-graphite-muted hover:text-graphite hover:bg-cream-raised'
+            }`}
+          >
+            {m.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function formatRange(startIso: string, endIso: string): string {
+  const start = new Date(startIso)
+  const end = new Date(endIso)
+  const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+  if (days === 0) return 'el mismo día'
+  if (days < 14) return `${days} días`
+  if (days < 60) return `${Math.round(days / 7)} semanas`
+  return `${Math.round(days / 30)} meses`
 }
