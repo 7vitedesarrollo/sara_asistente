@@ -16,7 +16,7 @@ Trabajo diferido tras el pivote a nutricionistas clínicos (2026-04-24).
 ## Fase 2 — 3-5 nutricionistas pagando
 
 - [ ] Recordatorios automáticos de citas (email / WhatsApp)
-- [ ] Vista gráfica de evolución antropométrica (peso / % grasa / IMC en el tiempo)
+- [x] Vista gráfica de evolución antropométrica — chart SVG custom con selector Peso/% Grasa/IMC/Cintura, tooltip y trend total (commit `2bc1b4b`)
 - [ ] Librería de planes alimentarios reutilizables (duplicar + ajustar)
 - [ ] Diario alimentario del paciente (tabla `food_diary` + portal paciente mínimo)
 - [ ] Facturación / recibos electrónicos según país
