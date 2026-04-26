@@ -4,29 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import DOMPurify from 'isomorphic-dompurify'
-
-const DAYS: { key: DayKey; label: string }[] = [
-  { key: 'monday', label: 'Lun' },
-  { key: 'tuesday', label: 'Mar' },
-  { key: 'wednesday', label: 'Mié' },
-  { key: 'thursday', label: 'Jue' },
-  { key: 'friday', label: 'Vie' },
-  { key: 'saturday', label: 'Sáb' },
-  { key: 'sunday', label: 'Dom' },
-]
-
-const MEALS: { key: MealKey; label: string }[] = [
-  { key: 'breakfast', label: 'Desayuno' },
-  { key: 'snack_am', label: 'Media mañana' },
-  { key: 'lunch', label: 'Almuerzo' },
-  { key: 'snack_pm', label: 'Merienda' },
-  { key: 'dinner', label: 'Cena' },
-]
-
-type DayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
-type MealKey = 'breakfast' | 'snack_am' | 'lunch' | 'snack_pm' | 'dinner'
-type DayMeals = Partial<Record<MealKey, string>>
-type WeekStructure = Partial<Record<DayKey, DayMeals>>
+import { MealPlanGridEditor, MealPlanGridReadOnly, type WeekStructure } from '@/components/MealPlanGrid'
 
 type MealPlan = {
   id: string
@@ -40,16 +18,28 @@ type MealPlan = {
   created_at: string
 }
 
+type Template = {
+  id: string
+  name: string
+  summary: string | null
+  instructions: string | null
+  structure: WeekStructure | null
+  daily_kcal: number | null
+  daily_protein_g: number | null
+}
+
 type Props = {
   mealPlans: MealPlan[]
+  templates: Template[]
   patientId: string
   nutritionistId: string
 }
 
-export default function PlanesClient({ mealPlans: initial, patientId, nutritionistId }: Props) {
+export default function PlanesClient({ mealPlans: initial, templates, patientId, nutritionistId }: Props) {
   const supabase = createClient()
   const [list, setList] = useState<MealPlan[]>(initial)
   const [showForm, setShowForm] = useState(false)
+  const [prefill, setPrefill] = useState<Partial<MealPlan> | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   async function handleSave(plan: Omit<MealPlan, 'id' | 'created_at'>) {
@@ -60,6 +50,7 @@ export default function PlanesClient({ mealPlans: initial, patientId, nutritioni
     }
     setList(prev => [optimistic, ...prev])
     setShowForm(false)
+    setPrefill(null)
 
     const { error, data } = await supabase
       .from('meal_plans')
@@ -86,26 +77,62 @@ export default function PlanesClient({ mealPlans: initial, patientId, nutritioni
     }
   }
 
+  async function handleSaveAsTemplate(plan: MealPlan) {
+    const name = prompt('Nombre de la plantilla', plan.summary ?? '')
+    if (!name?.trim()) return
+
+    const { error } = await supabase
+      .from('meal_plan_templates')
+      .insert({
+        nutritionist_id: nutritionistId,
+        name: DOMPurify.sanitize(name.trim()),
+        summary: plan.summary,
+        instructions: plan.instructions,
+        structure: plan.structure,
+        daily_kcal: plan.daily_kcal,
+        daily_protein_g: plan.daily_protein_g,
+      })
+
+    if (error) {
+      toast.error('Error al guardar la plantilla.')
+    } else {
+      toast.success('Plantilla creada — disponible en /plantillas')
+    }
+  }
+
   return (
     <div className="space-y-4">
       {!showForm ? (
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => { setPrefill(null); setShowForm(true) }}
           className="w-full border-2 border-dashed border-border rounded-lg py-3 text-sm text-graphite-subtle hover:border-sage hover:text-sage transition-colors"
         >
           + Nuevo plan alimentario
         </button>
       ) : (
         <PlanForm
+          templates={templates}
+          prefill={prefill}
+          onLoadTemplate={(t) => setPrefill({
+            summary: t.summary,
+            instructions: t.instructions,
+            structure: t.structure,
+            daily_kcal: t.daily_kcal,
+            daily_protein_g: t.daily_protein_g,
+          })}
           onSave={handleSave}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => { setShowForm(false); setPrefill(null) }}
         />
       )}
 
       {list.length === 0 && !showForm && (
         <div className="text-center py-16 border border-dashed border-border rounded-lg">
           <p className="font-display italic text-2xl text-graphite-muted">Aún sin planes alimentarios.</p>
-          <p className="text-sm text-graphite-subtle mt-2">Crea el primer plan semanal para iniciar el seguimiento.</p>
+          <p className="text-sm text-graphite-subtle mt-2">
+            {templates.length > 0
+              ? `Crea uno desde cero o cárgalo desde una de tus ${templates.length} plantilla${templates.length > 1 ? 's' : ''}.`
+              : 'Crea el primer plan semanal para iniciar el seguimiento.'}
+          </p>
         </div>
       )}
 
@@ -115,6 +142,7 @@ export default function PlanesClient({ mealPlans: initial, patientId, nutritioni
           plan={plan}
           expanded={expandedId === plan.id}
           onToggle={() => setExpandedId(prev => prev === plan.id ? null : plan.id)}
+          onSaveAsTemplate={() => handleSaveAsTemplate(plan)}
         />
       ))}
     </div>
@@ -124,29 +152,44 @@ export default function PlanesClient({ mealPlans: initial, patientId, nutritioni
 // ─── Form ────────────────────────────────────────────────────────────────
 
 function PlanForm({
+  templates,
+  prefill,
+  onLoadTemplate,
   onSave,
   onCancel,
 }: {
+  templates: Template[]
+  prefill: Partial<MealPlan> | null
+  onLoadTemplate: (t: Template) => void
   onSave: (plan: Omit<MealPlan, 'id' | 'created_at'>) => void
   onCancel: () => void
 }) {
-  const [summary, setSummary] = useState('')
-  const [instructions, setInstructions] = useState('')
-  const [dailyKcal, setDailyKcal] = useState('')
-  const [dailyProtein, setDailyProtein] = useState('')
+  // re-init state from prefill when it changes (key on parent forces remount)
+  const [summary, setSummary] = useState(prefill?.summary ?? '')
+  const [instructions, setInstructions] = useState(prefill?.instructions ?? '')
+  const [dailyKcal, setDailyKcal] = useState(prefill?.daily_kcal?.toString() ?? '')
+  const [dailyProtein, setDailyProtein] = useState(prefill?.daily_protein_g?.toString() ?? '')
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [endDate, setEndDate] = useState(() => {
     const d = new Date()
     d.setDate(d.getDate() + 6)
     return d.toISOString().slice(0, 10)
   })
-  const [structure, setStructure] = useState<WeekStructure>({})
+  const [structure, setStructure] = useState<WeekStructure>(prefill?.structure ?? {})
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('')
 
-  function setMeal(day: DayKey, meal: MealKey, value: string) {
-    setStructure(prev => ({
-      ...prev,
-      [day]: { ...prev[day], [meal]: value },
-    }))
+  function applyTemplate(templateId: string) {
+    setSelectedTemplate(templateId)
+    if (!templateId) return
+    const t = templates.find(t => t.id === templateId)
+    if (!t) return
+    setSummary(t.summary ?? '')
+    setInstructions(t.instructions ?? '')
+    setDailyKcal(t.daily_kcal?.toString() ?? '')
+    setDailyProtein(t.daily_protein_g?.toString() ?? '')
+    setStructure(t.structure ?? {})
+    onLoadTemplate(t)
+    toast.success(`Plantilla "${t.name}" cargada`)
   }
 
   function submit() {
@@ -167,7 +210,25 @@ function PlanForm({
 
   return (
     <div className="bg-cream-raised border border-border rounded-lg p-5 space-y-5">
-      {/* Header del form */}
+      {templates.length > 0 && (
+        <div className="bg-sage-bg rounded-md px-4 py-3 flex items-center gap-3">
+          <p className="text-xs font-mono text-sage uppercase tracking-widest shrink-0">Cargar desde plantilla</p>
+          <select
+            value={selectedTemplate}
+            onChange={e => applyTemplate(e.target.value)}
+            className="flex-1 px-3 py-1.5 bg-cream-raised border border-border-strong rounded-md text-sm text-graphite focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg"
+          >
+            <option value="">— Empezar desde cero —</option>
+            {templates.map(t => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+                {t.daily_kcal ? ` · ${t.daily_kcal} kcal` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div>
         <label className="block text-xs font-medium text-graphite-muted mb-2">
           Objetivo del plan <span className="text-terracotta">*</span>
@@ -227,42 +288,12 @@ function PlanForm({
         </div>
       </div>
 
-      {/* Grid semanal */}
       <div>
         <div className="flex items-baseline justify-between mb-2">
           <label className="text-xs font-medium text-graphite-muted">Plan semanal</label>
           <span className="text-[11px] font-mono text-graphite-subtle uppercase tracking-widest">7 días · 5 comidas</span>
         </div>
-        <div className="overflow-x-auto -mx-1 px-1">
-          <div className="min-w-[900px] grid grid-cols-[140px_repeat(7,minmax(120px,1fr))] gap-px bg-border rounded-md overflow-hidden border border-border">
-            {/* Header row */}
-            <div className="bg-cream-sunken px-3 py-2.5 text-[11px] font-mono text-graphite-subtle uppercase tracking-widest"></div>
-            {DAYS.map(d => (
-              <div key={d.key} className="bg-cream-sunken px-3 py-2.5 text-[11px] font-mono text-graphite-muted uppercase tracking-widest text-center">
-                {d.label}
-              </div>
-            ))}
-
-            {/* Meal rows */}
-            {MEALS.map(meal => (
-              <div key={meal.key} className="contents">
-                <div className="bg-cream-sunken px-3 py-2.5 text-xs font-medium text-graphite-muted flex items-center">
-                  {meal.label}
-                </div>
-                {DAYS.map(d => (
-                  <textarea
-                    key={`${d.key}-${meal.key}`}
-                    value={structure[d.key]?.[meal.key] ?? ''}
-                    onChange={e => setMeal(d.key, meal.key, e.target.value)}
-                    rows={2}
-                    placeholder="—"
-                    className="bg-cream-raised px-2.5 py-2 text-xs text-graphite placeholder:text-graphite-subtle focus:outline-none focus:bg-sage-bg/30 resize-none border-0"
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+        <MealPlanGridEditor structure={structure} onChange={setStructure} />
       </div>
 
       <div>
@@ -296,16 +327,18 @@ function PlanForm({
   )
 }
 
-// ─── Card (lista) ────────────────────────────────────────────────────────
+// ─── Card ────────────────────────────────────────────────────────────────
 
 function PlanCard({
   plan,
   expanded,
   onToggle,
+  onSaveAsTemplate,
 }: {
   plan: MealPlan
   expanded: boolean
   onToggle: () => void
+  onSaveAsTemplate: () => void
 }) {
   const created = new Date(plan.created_at).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' })
   const range = plan.start_date && plan.end_date
@@ -335,7 +368,13 @@ function PlanCard({
 
       {expanded && (
         <div className="border-t border-border p-5 space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={onSaveAsTemplate}
+              className="text-sm px-4 py-2 rounded-md text-sage border border-sage hover:bg-sage-bg transition-colors"
+            >
+              Guardar como plantilla
+            </button>
             <a
               href={`/print/plan/${plan.id}`}
               target="_blank"
@@ -349,28 +388,7 @@ function PlanCard({
             </a>
           </div>
           {plan.structure && Object.keys(plan.structure).length > 0 ? (
-            <div className="overflow-x-auto -mx-1 px-1">
-              <div className="min-w-[900px] grid grid-cols-[120px_repeat(7,minmax(110px,1fr))] gap-px bg-border rounded-md overflow-hidden border border-border">
-                <div className="bg-cream-sunken px-3 py-2 text-[11px] font-mono text-graphite-subtle uppercase tracking-widest"></div>
-                {DAYS.map(d => (
-                  <div key={d.key} className="bg-cream-sunken px-3 py-2 text-[11px] font-mono text-graphite-muted uppercase tracking-widest text-center">
-                    {d.label}
-                  </div>
-                ))}
-                {MEALS.map(meal => (
-                  <div key={meal.key} className="contents">
-                    <div className="bg-cream-sunken px-3 py-2 text-xs font-medium text-graphite-muted">
-                      {meal.label}
-                    </div>
-                    {DAYS.map(d => (
-                      <div key={`${d.key}-${meal.key}`} className="bg-cream-raised px-2.5 py-2 text-xs text-graphite whitespace-pre-wrap leading-snug">
-                        {plan.structure?.[d.key]?.[meal.key] ?? <span className="text-graphite-subtle">—</span>}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <MealPlanGridReadOnly structure={plan.structure} />
           ) : (
             <p className="text-sm text-graphite-subtle italic">Plan sin estructura semanal detallada.</p>
           )}

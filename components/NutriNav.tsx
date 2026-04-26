@@ -42,6 +42,15 @@ const navItems: NavItem[] = [
     ),
   },
   {
+    href: '/plantillas',
+    label: 'Plantillas',
+    icon: (a) => (
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke={stroke(a)} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
+      </svg>
+    ),
+  },
+  {
     href: '/sara',
     label: 'Sara IA',
     icon: (a) => (
