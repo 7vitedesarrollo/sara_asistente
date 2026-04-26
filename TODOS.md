@@ -17,7 +17,7 @@ Trabajo diferido tras el pivote a nutricionistas clínicos (2026-04-24).
 
 - [ ] Recordatorios automáticos de citas (email / WhatsApp)
 - [x] Vista gráfica de evolución antropométrica — chart SVG custom con selector Peso/% Grasa/IMC/Cintura, tooltip y trend total (commit `2bc1b4b`)
-- [ ] Librería de planes alimentarios reutilizables (duplicar + ajustar)
+- [x] Librería de planes alimentarios reutilizables — tabla `meal_plan_templates`, ruta `/plantillas` con CRUD, "Cargar desde plantilla" en PlanForm + "Guardar como plantilla" en PlanCard (commit `9fd2323`)
 - [ ] Diario alimentario del paciente (tabla `food_diary` + portal paciente mínimo)
 - [ ] Facturación / recibos electrónicos según país
 - [ ] PWA con soporte offline básico para consulta sin internet
