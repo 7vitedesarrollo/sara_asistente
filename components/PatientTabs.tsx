@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 const tabs = [
   { label: 'Ficha', path: 'ficha' },
   { label: 'Mediciones', path: 'mediciones' },
+  { label: 'Diario', path: 'diario' },
   { label: 'Consultas', path: 'consultas' },
   { label: 'Planes alimentarios', path: 'planes' },
   { label: 'Referencias lab.', path: 'referencias-lab' },
