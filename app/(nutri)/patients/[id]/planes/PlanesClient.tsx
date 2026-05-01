@@ -243,7 +243,7 @@ function PlanForm({
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label className="block text-xs font-medium text-graphite-muted mb-2">
             Kcal diarias <span className="font-mono text-graphite-subtle">kcal</span>

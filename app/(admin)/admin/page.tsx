@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
       <h1 className="font-display text-3xl text-graphite mb-2">Panel de administración</h1>
       <p className="text-sm text-graphite-subtle mb-8">Vista global de la plataforma sara</p>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {stats.map(s => (
           <div key={s.label} className="bg-cream-raised border border-border rounded-xl p-5">
             <p className="text-3xl mb-1">{s.icon}</p>

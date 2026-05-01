@@ -50,7 +50,7 @@ export default function SaraClient({ patients, nutritionistId }: { patients: Pat
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
-      <div className="flex items-end gap-3 mb-6 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-6 pb-4 border-b border-border">
         <div>
           <h1 className="font-display text-3xl text-graphite leading-none">Sara <em className="italic text-sage">IA</em></h1>
           <p className="text-xs text-graphite-subtle mt-1.5 font-mono uppercase tracking-widest">Asistente nutricional</p>
@@ -58,7 +58,7 @@ export default function SaraClient({ patients, nutritionistId }: { patients: Pat
         <select
           value={selectedPatient}
           onChange={e => setSelectedPatient(e.target.value)}
-          className="ml-auto text-sm border border-border-strong rounded-md px-3 py-2 bg-cream-raised text-graphite focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg"
+          className="sm:ml-auto text-sm border border-border-strong rounded-md px-3 py-2 bg-cream-raised text-graphite focus:outline-none focus:border-sage focus:ring-[3px] focus:ring-sage-bg"
         >
           <option value="">Consulta general</option>
           {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}

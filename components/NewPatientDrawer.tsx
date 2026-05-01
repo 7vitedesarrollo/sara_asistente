@@ -117,7 +117,7 @@ export default function NewPatientDrawer({ open, onClose, nutritionistId, onCrea
             {errors.name && <p className="text-terracotta text-xs mt-1">{errors.name}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-graphite-muted mb-1">Edad</label>
               <input

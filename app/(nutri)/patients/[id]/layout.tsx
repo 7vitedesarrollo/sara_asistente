@@ -23,23 +23,23 @@ export default async function PatientLayout({
   if (!patient) notFound()
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
       {/* Header del paciente */}
       <div className="mb-6">
         <a
           href="/dashboard"
-          className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-3"
+          className="text-sm text-graphite-subtle hover:text-graphite-muted flex items-center gap-1 mb-3"
         >
           ← Volver
         </a>
-        <div className="flex items-baseline gap-3">
-          <h1 className="font-display text-3xl text-graphite">{patient.name}</h1>
-          <span className="text-sm text-gray-400">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 className="font-display text-2xl sm:text-3xl text-graphite">{patient.name}</h1>
+          <span className="text-sm text-graphite-subtle font-mono">
             {[patient.age ? `${patient.age} años` : null, patient.sex].filter(Boolean).join(' · ')}
           </span>
         </div>
         {patient.phone && (
-          <p className="text-sm text-gray-400 mt-0.5">{patient.phone}</p>
+          <p className="text-sm text-graphite-subtle mt-0.5 font-mono">{patient.phone}</p>
         )}
       </div>
 

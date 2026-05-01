@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import NutriNav from '@/components/NutriNav'
+import NutriShell from '@/components/NutriShell'
 
-export default async function DoctorLayout({
+export default async function NutriLayout({
   children,
 }: {
   children: React.ReactNode
@@ -14,16 +14,13 @@ export default async function DoctorLayout({
 
   const { data: nutritionist } = await supabase
     .from('nutritionists')
-    .select('name, specialization')
+    .select('name')
     .eq('id', user.id)
     .single()
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <NutriNav nutritionistName={nutritionist?.name ?? 'Doctor'} />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
+    <NutriShell nutritionistName={nutritionist?.name ?? 'Nutricionista'}>
+      {children}
+    </NutriShell>
   )
 }

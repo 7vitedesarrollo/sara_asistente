@@ -33,7 +33,7 @@ export default async function AnalyticsPage() {
     <div className="max-w-2xl mx-auto px-4 py-6">
       <h1 className="font-display text-3xl text-graphite mb-6">Métricas</h1>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {stats.map(s => (
           <div key={s.label} className="bg-cream-raised border border-border rounded-xl p-5">
             <p className="text-3xl mb-1">{s.icon}</p>

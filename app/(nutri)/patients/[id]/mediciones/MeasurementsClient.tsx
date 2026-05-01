@@ -159,7 +159,7 @@ function MeasurementForm({
 
   return (
     <div className="bg-cream-raised border border-border rounded-lg p-5 space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Peso" unit="kg" value={weight} onChange={setWeight} type="number" step="0.1" required />
         <Field label="% Grasa corporal" unit="%" value={bodyFat} onChange={setBodyFat} type="number" step="0.1" />
         <Field label="Masa muscular" unit="kg" value={muscleMass} onChange={setMuscleMass} type="number" step="0.1" />
@@ -236,34 +236,65 @@ function Field({
 // ─── Table ───────────────────────────────────────────────────────────────
 
 function MeasurementTable({ measurements }: { measurements: Measurement[] }) {
-  // Reverse-pair to compute delta (since list is DESC, "next" item is the previous chronologically)
   return (
-    <div className="bg-cream-raised border border-border rounded-lg overflow-hidden">
-      <div className="grid grid-cols-7 gap-2 px-4 py-3 border-b border-border bg-cream-sunken text-[11px] font-mono text-graphite-subtle uppercase tracking-widest">
-        <div>Fecha</div>
-        <div className="text-right">Peso</div>
-        <div className="text-right">% Grasa</div>
-        <div className="text-right">M. Muscular</div>
-        <div className="text-right">Cintura</div>
-        <div className="text-right">Cadera</div>
-        <div className="text-right">IMC</div>
+    <>
+      {/* Desktop: tabla densa */}
+      <div className="hidden md:block bg-cream-raised border border-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-7 gap-2 px-4 py-3 border-b border-border bg-cream-sunken text-[11px] font-mono text-graphite-subtle uppercase tracking-widest">
+          <div>Fecha</div>
+          <div className="text-right">Peso</div>
+          <div className="text-right">% Grasa</div>
+          <div className="text-right">M. Muscular</div>
+          <div className="text-right">Cintura</div>
+          <div className="text-right">Cadera</div>
+          <div className="text-right">IMC</div>
+        </div>
+        {measurements.map((m, idx) => {
+          const prev = measurements[idx + 1]
+          const date = new Date(m.measured_at).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })
+          return (
+            <div key={m.id} className="grid grid-cols-7 gap-2 px-4 py-3 border-b border-border last:border-0 text-sm hover:bg-cream-sunken transition-colors">
+              <div className="font-mono text-graphite-muted">{date}</div>
+              <Cell value={m.weight_kg} unit="kg" prev={prev?.weight_kg ?? null} betterIsLower />
+              <Cell value={m.body_fat_pct} unit="%" prev={prev?.body_fat_pct ?? null} betterIsLower />
+              <Cell value={m.muscle_mass_kg} unit="kg" prev={prev?.muscle_mass_kg ?? null} betterIsLower={false} />
+              <Cell value={m.waist_cm} unit="cm" prev={prev?.waist_cm ?? null} betterIsLower />
+              <Cell value={m.hip_cm} unit="cm" prev={prev?.hip_cm ?? null} betterIsLower />
+              <Cell value={m.bmi} unit="" prev={prev?.bmi ?? null} betterIsLower />
+            </div>
+          )
+        })}
       </div>
-      {measurements.map((m, idx) => {
-        const prev = measurements[idx + 1]
-        const date = new Date(m.measured_at).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })
-        return (
-          <div key={m.id} className="grid grid-cols-7 gap-2 px-4 py-3 border-b border-border last:border-0 text-sm hover:bg-cream-sunken transition-colors">
-            <div className="font-mono text-graphite-muted">{date}</div>
-            <Cell value={m.weight_kg} unit="kg" prev={prev?.weight_kg ?? null} betterIsLower />
-            <Cell value={m.body_fat_pct} unit="%" prev={prev?.body_fat_pct ?? null} betterIsLower />
-            <Cell value={m.muscle_mass_kg} unit="kg" prev={prev?.muscle_mass_kg ?? null} betterIsLower={false} />
-            <Cell value={m.waist_cm} unit="cm" prev={prev?.waist_cm ?? null} betterIsLower />
-            <Cell value={m.hip_cm} unit="cm" prev={prev?.hip_cm ?? null} betterIsLower />
-            <Cell value={m.bmi} unit="" prev={prev?.bmi ?? null} betterIsLower />
-          </div>
-        )
-      })}
-    </div>
+
+      {/* Mobile: card-list */}
+      <div className="md:hidden space-y-3">
+        {measurements.map((m, idx) => {
+          const prev = measurements[idx + 1]
+          const date = new Date(m.measured_at).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })
+          const fields: { label: string; value: number | null; unit: string; betterIsLower: boolean; prev: number | null }[] = [
+            { label: 'Peso', value: m.weight_kg, unit: 'kg', betterIsLower: true, prev: prev?.weight_kg ?? null },
+            { label: '% Grasa', value: m.body_fat_pct, unit: '%', betterIsLower: true, prev: prev?.body_fat_pct ?? null },
+            { label: 'M. Muscular', value: m.muscle_mass_kg, unit: 'kg', betterIsLower: false, prev: prev?.muscle_mass_kg ?? null },
+            { label: 'Cintura', value: m.waist_cm, unit: 'cm', betterIsLower: true, prev: prev?.waist_cm ?? null },
+            { label: 'Cadera', value: m.hip_cm, unit: 'cm', betterIsLower: true, prev: prev?.hip_cm ?? null },
+            { label: 'IMC', value: m.bmi, unit: '', betterIsLower: true, prev: prev?.bmi ?? null },
+          ]
+          return (
+            <div key={m.id} className="bg-cream-raised border border-border rounded-lg p-4">
+              <p className="text-[11px] font-mono text-graphite-subtle uppercase tracking-widest mb-3">{date}</p>
+              <div className="grid grid-cols-2 gap-3">
+                {fields.filter(f => f.value != null).map(f => (
+                  <div key={f.label}>
+                    <p className="text-[11px] font-mono text-graphite-subtle uppercase tracking-widest">{f.label}</p>
+                    <Cell value={f.value} unit={f.unit} prev={f.prev} betterIsLower={f.betterIsLower} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </>
   )
 }
 

@@ -140,7 +140,7 @@ function PatientCard({
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
           <Field label="Nombre" value={p.name} />
           <Field label="Edad" value={p.age ? `${p.age} años` : null} mono />
           <Field label="Sexo" value={p.sex === 'M' ? 'Masculino' : p.sex === 'F' ? 'Femenino' : p.sex} />
@@ -167,7 +167,7 @@ function PatientCard({
     <section className="bg-cream-raised border border-border rounded-lg p-6 space-y-4">
       <h2 className="font-display text-2xl text-graphite leading-tight">Editar ficha</h2>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="col-span-2">
           <Label>Nombre</Label>
           <Input value={draft.name} onChange={v => update('name', v)} />
@@ -281,7 +281,7 @@ function EnergyExpenditureCard({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Stat
               label="TMB / BMR"
               value={`${calc.bmr}`}
@@ -301,7 +301,7 @@ function EnergyExpenditureCard({
             <p className="text-[11px] font-mono text-graphite-subtle uppercase tracking-widest">
               Sugerencias por objetivo
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <Goal label="Reducción" range={`${calc.deficit.low}–${calc.deficit.high}`} delta="−15 a −20%" />
               <Goal label="Mantenimiento" range={`${calc.tdee}`} delta="100% TDEE" highlight />
               <Goal label="Aumento masa" range={`${calc.surplus.low}–${calc.surplus.high}`} delta="+10 a +15%" />
